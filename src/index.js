@@ -11,6 +11,18 @@ const usersRoutes = require('./routes/usersRoutes');
 
 const app = express();
 
+const cors = require('cors');
+
+app.use(cors()); // ✅ Allows cross-origin requests
+
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; img-src 'self' data:; script-src 'self'",
+  );
+  next();
+});
+
 app.use(express.json());
 
 // Attach routes AFTER initializing `app`
@@ -22,6 +34,6 @@ sequelize.sync().then(() => {
   console.log('✅ Connected to PostgreSQL Database synced');
 });
 
-app.listen(5001, () => {
-  console.log('🚀 Server running on port 5001');
+app.listen(7080, () => {
+  console.log('🚀 Server running on port 7080');
 });

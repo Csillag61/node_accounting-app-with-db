@@ -13,7 +13,7 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        imgSrc: ["'self'", 'data:', 'http://localhost:5001'],
+        imgSrc: ["'self'", 'data:', 'http://localhost:7080'],
       },
     },
   }),

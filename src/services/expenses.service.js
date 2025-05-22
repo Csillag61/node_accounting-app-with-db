@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const { Sequelize } = require('sequelize');
 const { Expense } = require('../models/Expense.model');
 const { Category } = require('../models/Category.model');

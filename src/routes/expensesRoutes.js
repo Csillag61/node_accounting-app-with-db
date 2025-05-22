@@ -1,5 +1,5 @@
 const express = require('express');
-const Expense = require('../models/Expense.model');
+const { Expense, User } = require('../models/models');
 
 const router = express.Router();
 
@@ -31,10 +31,16 @@ router.get('/expenses/:id', async (req, res) => {
 // ✅ POST create a new expense
 router.post('/expenses', async (req, res) => {
   try {
-    const { title, amount, spentAt, category, note } = req.body;
+    const { title, amount, spentAt, category, note, userId } = req.body;
 
-    if (!title || !amount || !spentAt || !category) {
+    if (!title || !amount || !spentAt || !category || !userId) {
       return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(400).json({ error: 'User not found' });
     }
 
     const expense = await Expense.create({
@@ -43,6 +49,7 @@ router.post('/expenses', async (req, res) => {
       spentAt,
       category,
       note,
+      userId,
     });
 
     res.status(201).json(expense);

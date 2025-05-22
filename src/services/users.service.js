@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const { User } = require('../models/User');
 
 async function getAll() {

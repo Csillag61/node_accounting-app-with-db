@@ -1,5 +1,5 @@
 const express = require('express');
-const User = require('../models/User.model');
+const { User } = require('../models/models');
 
 const router = express.Router();
 
@@ -75,7 +75,7 @@ router.delete('/users/:id', async (req, res) => {
     }
 
     await user.destroy();
-    res.status(204).end();
+    res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

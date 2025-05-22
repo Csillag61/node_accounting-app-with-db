@@ -5,9 +5,7 @@ const { Expense } = require('./Expense.model');
 const { Category } = require('./Category.model');
 
 module.exports = {
-  models: {
-    User,
-    Expense,
-    Category,
-  },
+  User,
+  Expense,
+  Category,
 };
