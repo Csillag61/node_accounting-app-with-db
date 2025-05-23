@@ -50,9 +50,9 @@ async function deleteById(id) {
   }
 }
 
-async function update({ id, userName }) {
+async function update({ id, name }) {
   try {
-    if (!userName) {
+    if (!name) {
       return null; // or throw new Error('Name is required');
     }
 
@@ -62,7 +62,7 @@ async function update({ id, userName }) {
       return null;
     }
 
-    user.name = userName;
+    user.name = name;
     await user.save();
 
     return user;

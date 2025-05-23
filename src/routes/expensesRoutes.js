@@ -67,12 +67,40 @@ router.patch('/expenses/:id', async (req, res) => {
       return res.status(404).json({ error: 'Expense not found' });
     }
 
-    Object.keys(req.body).forEach((key) => {
-      if (expense[key] !== undefined) {
-        expense[key] = req.body[key];
+    // Only allow updating these fields
+    const updatableFields = [
+      'title',
+      'amount',
+      'spentAt',
+      'category',
+      'note',
+      'userId',
+    ];
+    const updates = {};
+
+    updatableFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
       }
     });
 
+    // Require at least one valid field to update
+    if (Object.keys(updates).length === 0) {
+      return res
+        .status(400)
+        .json({ error: 'No valid fields provided for update' });
+    }
+
+    // If userId is being updated, check if the user exists
+    if (updates.userId !== undefined) {
+      const user = await User.findByPk(updates.userId);
+
+      if (!user) {
+        return res.status(400).json({ error: 'User not found' });
+      }
+    }
+
+    Object.assign(expense, updates);
     await expense.save();
     res.json(expense);
   } catch (error) {

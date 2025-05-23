@@ -54,10 +54,25 @@ router.patch('/users/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (req.body.name !== undefined) {
-      user.name = req.body.name;
-      await user.save();
+    // Only allow updating the 'name' field
+    const updatableFields = ['name'];
+    const updates = {};
+
+    updatableFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    });
+
+    // Require at least one valid field to update
+    if (Object.keys(updates).length === 0) {
+      return res
+        .status(400)
+        .json({ error: 'No valid fields provided for update' });
     }
+
+    Object.assign(user, updates);
+    await user.save();
 
     res.json(user);
   } catch (error) {

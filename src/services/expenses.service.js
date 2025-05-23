@@ -94,38 +94,52 @@ async function update({ id, spentAt, title, amount, category, note }) {
       return null;
     }
 
+    // Collect valid fields to update
+    const updates = {};
+
     if (spentAt !== undefined) {
-      expense.spentAt = spentAt;
+      updates.spentAt = spentAt;
     }
 
     if (title !== undefined) {
-      expense.title = title;
+      updates.title = title;
     }
 
     if (amount !== undefined) {
-      expense.amount = +amount;
+      updates.amount = +amount;
     }
 
     if (category !== undefined) {
+      updates.category = category;
+    }
+
+    if (note !== undefined) {
+      updates.note = note;
+    }
+
+    // Require at least one valid field to update
+    if (Object.keys(updates).length === 0) {
+      throw new Error('No valid fields provided for update');
+    }
+
+    // If category is being updated, validate it exists
+    if (updates.category !== undefined) {
       const foundCategory = await Category.findOne({
-        where: { name: category },
+        where: { name: updates.category },
       });
 
       if (!foundCategory) {
         throw new Error('Category not found');
       }
-
-      expense.category = foundCategory.name;
+      updates.category = foundCategory.name;
     }
 
-    if (note !== undefined) {
-      expense.note = note;
-    }
-
+    // Apply updates
+    Object.assign(expense, updates);
     await expense.save();
 
     return expense;
-  } catch {
+  } catch (error) {
     throw new Error('Error updating expense');
   }
 }
