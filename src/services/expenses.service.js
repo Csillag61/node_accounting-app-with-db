@@ -45,6 +45,19 @@ async function getById(id) {
 }
 
 async function create({ userId, spentAt, title, amount, category, note }) {
+  // Validate required fields
+  if (
+    userId === undefined ||
+    spentAt === undefined ||
+    title === undefined ||
+    amount === undefined ||
+    category === undefined
+  ) {
+    throw new Error(
+      'Missing required fields: userId, spentAt, title, amount, category',
+    );
+  }
+
   const expense = await Expense.create({
     userId: +userId,
     spentAt,

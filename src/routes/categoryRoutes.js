@@ -17,7 +17,13 @@ router.get('/categories', async (req, res) => {
 // POST create a new category
 router.post('/categories', async (req, res) => {
   try {
-    const category = await Category.create({ name: req.body.name });
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+
+    const category = await Category.create({ name });
 
     res.status(201).json(category);
   } catch (error) {

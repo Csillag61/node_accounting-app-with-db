@@ -19,6 +19,10 @@ async function create({ name: categoryName }) {
 }
 
 async function update(id, { name: categoryName }) {
+  if (!categoryName) {
+    return null; // or throw new Error('Name is required');
+  }
+
   const category = await Category.findByPk(id);
 
   if (!category) {

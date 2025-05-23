@@ -1,4 +1,4 @@
-const { User } = require('../models/User');
+const { User } = require('../models/User.model');
 
 async function getAll() {
   try {
@@ -22,6 +22,10 @@ async function getById(id) {
 
 async function create(userName) {
   try {
+    if (!userName) {
+      throw new Error('Name is required');
+    }
+
     const user = await User.create({ name: userName });
 
     return user;
@@ -48,6 +52,10 @@ async function deleteById(id) {
 
 async function update({ id, userName }) {
   try {
+    if (!userName) {
+      return null; // or throw new Error('Name is required');
+    }
+
     const user = await User.findByPk(id);
 
     if (!user) {

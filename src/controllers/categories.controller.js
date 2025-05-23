@@ -35,6 +35,12 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   const { name: categoryName } = req.body;
 
+  if (!categoryName) {
+    res.status(400).send('Name is required');
+
+    return;
+  }
+
   const category = await categoryService.update(req.params.id, {
     name: categoryName,
   });

@@ -60,7 +60,15 @@ app.patch('/users/:id', async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    await user.update(req.body);
+
+    // Only allow updating name, and require it to be present and non-empty
+    const { name } = req.body;
+
+    if (name === undefined || name === null || name === '') {
+      return res.status(400).json({ error: 'Name is required for update' });
+    }
+
+    await user.update({ name });
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -124,11 +132,15 @@ app.get('/expenses', async (req, res) => {
       where.userId = userId;
     }
 
-    if (category) {
-      where.category = category;
+    if (category && categories) {
+      return res.status(400).json({
+        error: "Provide either 'category' or 'categories', not both.",
+      });
     }
 
-    if (categories) {
+    if (category) {
+      where.category = category;
+    } else if (categories) {
       where.category = categories.split(',');
     }
 
@@ -174,7 +186,41 @@ app.patch('/expenses/:id', async (req, res) => {
     if (!expense) {
       return res.status(404).json({ error: 'Expense not found' });
     }
-    await expense.update(req.body);
+
+    // Only allow updating these fields
+    const allowedFields = [
+      'title',
+      'amount',
+      'spentAt',
+      'category',
+      'note',
+      'userId',
+    ];
+    const updates = {};
+
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updates[field] = req.body[field];
+      }
+    }
+
+    // Require at least one valid field to update
+    if (Object.keys(updates).length === 0) {
+      return res
+        .status(400)
+        .json({ error: 'No valid fields provided for update' });
+    }
+
+    // If userId is being updated, check if the user exists
+    if (updates.userId !== undefined) {
+      const user = await User.findByPk(updates.userId);
+
+      if (!user) {
+        return res.status(400).json({ error: 'User not found' });
+      }
+    }
+
+    await expense.update(updates);
     res.json(expense);
   } catch (error) {
     res.status(500).json({ error: error.message });
